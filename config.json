@@ -1,0 +1,9 @@
+{
+    "frontPage": "home",
+    "sidebar": [
+        "*",
+        "posts:5"
+    ],
+    "siteName": "Igni",
+    "theme": "IgniTheme"
+}

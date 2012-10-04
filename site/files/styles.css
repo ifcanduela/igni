@@ -1,0 +1,97 @@
+/**
+ * Igni default stylesheet
+ *
+ * @author ifcanduela <ifcanduela@gmail.com>
+ */
+
+/** General Styles **/
+
+body {
+    background-color: #fff;
+    color: #333;
+    font: normal 16px/1.6 helvetica, arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-y: scroll;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin-top: 0;
+}
+
+a {
+    color: #39d;
+}
+
+a:hover {
+    color: #4af;
+}
+
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/** Layout **/
+
+#page {
+    margin: 0 auto;
+    padding: 20px;
+    width: 860px;
+}
+
+#header {
+
+}
+
+#middle {
+    background-color: #efefef;
+    border-radius: 2px;
+    color: #333;
+    clear: both;
+}
+
+#main {
+    float: left;
+    padding: 20px;
+    width: 600px;
+}
+
+#main p {
+    text-align: justify;
+}
+
+#sidebar {
+    float: right;
+    padding: 20px;
+    width: 180px;
+}
+
+#footer {
+    font-size: 85%;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/** Markdown **/
+
+pre {
+    padding: 5px;
+}
+
+code {
+    padding: 2px;
+}
+
+code, pre {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 1px;
+    font: normal 90%/1.4 consolas, "courier new", courier, monospace;
+}
+
+pre > code {
+    border: none;
+    font-size: 100%;
+}
