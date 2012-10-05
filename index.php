@@ -6,11 +6,7 @@
 require_once 'igni/Igni.php';
 require_once 'igni/MarkdownRenderer.php';
 
-if (isset($_GET['url'])) {
-    $page = $_GET['url'];
-} else {
-    $page = false;
-}
+$page = isset($_GET['url']) ? $_GET['url'] : '';
 
 $igni = new Igni(new MarkdownRenderer);
-$igni->renderPage($page);
+echo $igni->renderPage($page);

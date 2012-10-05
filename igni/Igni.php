@@ -38,7 +38,7 @@ class Igni
         /**
          * @example 'http://localhost'
          */
-        $this->serverName = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['SERVER_NAME'];
+        $this->serverName = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost/');
         /**
          * @example '/igni/' (length=6)
          */
@@ -59,6 +59,12 @@ class Igni
         $this->setTheme($this->config->theme);
     }
 
+    /**
+     * Renders a full HTML document corresponding to the provided page name.
+     * 
+     * @param  string $page The page to render
+     * @return string The rendered HTML source code
+     */
     public function renderPage($page = '~frontPage')
     {
         if (!$this->renderer) {
@@ -67,8 +73,6 @@ class Igni
 
         $theme = file_get_contents($this->themesPath . $this->theme . '.php');
 
-        # Render the main section
-        
         # If the page starts with a tilde, it's a special page
         if ($page{0} === '~') {
             $special = substr($page, 1);
@@ -76,6 +80,8 @@ class Igni
                 $page = $this->config->$special;
             }
         }
+
+        # Render the main section
 
         if ($this->postExists($page)) {
             $main = $this->renderer->renderFile($this->postsPath . $page . $this->renderer->getFileExtension());
@@ -96,12 +102,27 @@ class Igni
         $title = ucwords($page) . ' - ' . $this->config->siteName;
         $url = $this->url;
 
-        echo $this->renderer->renderTemplate($theme, compact('url', 'title', 'header', 'main', 'sidebar', 'footer'));
+        return $this->renderer->renderTemplate($theme, compact('url', 'title', 'header', 'main', 'sidebar', 'footer'));
     }
 
+    /**
+     * Set the renderer instance to use.
+     * 
+     * @param IgniRenderer $renderer An instance of a class that implements IgniRenderer
+     */
     public function setRenderer(IgniRenderer $renderer)
     {
         $this->renderer = $renderer;
+    }
+
+    /**
+     * Get the renderer instance in use.
+     * 
+     * @return IgniRenderer The renderer instance in use
+     */
+    public function getRenderer()
+    {
+        return $this->renderer;
     }
 
     /**
@@ -119,33 +140,91 @@ class Igni
         $this->theme = $theme;
     }
 
+    /**
+     * The fully-quilified file name of a post.
+     * 
+     * This function does not check whether the file exists or not.
+     * 
+     * @param  string $slug The base file name, without extension
+     * @return string The fully-qualified file name corresponding to the post.
+     */
     public function getPostFileName($slug)
     {
         return $this->postsPath . $slug . $this->renderer->getFileExtension();
     }
 
+    /**
+     * The fully-qualified file name of a page.
+     * 
+     * This function does not check whether the file exists or not.
+     * 
+     * @param  string $slug The base file name, without extension
+     * @return string The fully-qualified file name corresponding to the page
+     */
     public function getPageFileName($slug)
     {
         return $this->pagesPath . $slug . $this->renderer->getFileExtension();
     }
 
+    /**
+     * Check if a post file exists.
+     * 
+     * @param  string $slug The base file name, without extension
+     * @return bool True if the file exists, false otherwise
+     */
     public function postExists($slug)
     {
         return file_exists($this->postsPath . $slug . $this->renderer->getFileExtension());
     }
 
+    /**
+     * Check if a page file exists.
+     * 
+     * @param  string $slug The base file name, without extension
+     * @return bool True if the file exists, false otherwise
+     */
     public function pageExists($slug)
     {
         return file_exists($this->pagesPath . $slug . $this->renderer->getFileExtension());
     }
 
-    public function postsList()
+    public function postsList($postCount = 0)
     {
+        $postFiles = glob($this->postsPath . '*' . $this->renderer->getFileExtension());
 
+        usort($postFiles, function($a, $b) {
+            return filemtime($a) > filemtime($b);
+        });
+
+        if ($postCount) {
+            $postFiles = array_slice($postFiles, 0, $postCount);
+        }
+
+        array_walk($postFiles, function(&$post)
+            {
+                $post = array(
+                    'filename' =>$post,
+                    'slug' => pathinfo($post, PATHINFO_FILENAME), 
+                    'title' => ucwords(str_replace(array('-', '_'), array(' ', '-'), pathinfo($post, PATHINFO_FILENAME))),
+                    'date' => filemtime($post));
+            });
+
+        return $postFiles;
     }
 
     public function pagesList()
     {
-
+        $pageFiles = glob($this->pagesPath . '*' . $this->renderer->getFileExtension());
+        
+        array_walk($pageFiles, function(&$page)
+            {
+                $page = array(
+                    'filename' => $page,
+                    'slug' => pathinfo($page, PATHINFO_FILENAME), 
+                    'title' => ucwords(str_replace(array('-', '_'), array(' ', '-'), pathinfo($page, PATHINFO_FILENAME))),
+                    'date' => filemtime($page));
+            });
+        
+        return $pageFiles;
     }
 }

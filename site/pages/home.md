@@ -1,6 +1,6 @@
 # Home
 
-So, you don't know how to make websites, but you want one. An affordable, pretty one. But... oh, no &mdash; you can't find anything you can call your own out there. I'd like to tell you Igni is the solution, but it's far from being a solution to anything.
+So, you don't know how to make websites, but you want one. An affordable, pretty one. But... oh, no &mdash; you can't find anything you can call your own out there! I'd like to tell you Igni is the solution, but it's far from being a solution to anything.
 
 What I can tell you is that you should try it.
 
@@ -8,9 +8,13 @@ What I can tell you is that you should try it.
 
 Igni is a PHP script that takes your files and automatically builds a simple website around them.
 
+## Who Is It For?
+
+This is for those folks who want a simple website and have a web host with PHP support, but don't know PHP and don't want to know PHP.
+
 ## How Do I Use It?
 
-You write your content in [Markdown syntax](http://daringfireball.net/projects/markdown/syntax) and put it in text files in the **pages** and **posts** folders. Taht's it, mostly.
+You write your content in HTML or [Markdown syntax](http://daringfireball.net/projects/markdown/syntax) and put it in text files in the **pages** and **posts** folders. That's it, mostly.
 
 ## Can I Change The Way It Works?
 
