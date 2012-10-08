@@ -1,15 +1,18 @@
 <?php
 
-interface IgniRenderer
+class IgniRenderer
 {
+    protected $fileExtension;
+    
     /**
-     * Renders the contents of a file.
+     * Class constructor. Initializes default file extension.
      * 
-     * @param string $file The path and name of the file to render
-     * @return string The output of rendering the file
-     * @access public
+     * @param string $fileExtension The file extension, starting with a period
      */
-    public function renderFile($file);
+    public function __construct($fileExtension = '.html')
+    {
+        $this->fileExtension = $fileExtension;
+    }
 
     /**
      * Renders a text.
@@ -18,7 +21,22 @@ interface IgniRenderer
      * @return string The output of rendering the string
      * @access public
      */
-    public function renderText($text);
+    public function renderText($text)
+    {
+        return $text;
+    }
+    
+    /**
+     * Renders the contents of a file.
+     * 
+     * @param string $file The path and name of the file to render
+     * @return string The output of rendering the file
+     * @access public
+     */
+    public function renderFile($file)
+    {
+        return file_get_contents($file);
+    }
 
     /**
      * Renders a full page template.
@@ -28,53 +46,30 @@ interface IgniRenderer
      * @return string A string with a full HTML document
      * @deprecated This function belongs in the Igni core class
      */
-    public function renderTemplate($template, array $sections);
+    public function renderTemplate($template, array $sections)
+    {
+        foreach ($sections as $tag => $content) {
+            $template = str_replace('{{' . $tag . '}}', $content, $template);
+        }
+
+        return $template;
+    }
 
     /**
-     * Get the extension of templat files.
+     * Get the extension of template files.
      * 
      * @return string The file extension, starting with a period
      */
-    public function getFileExtension();
+    public function getFileExtension()
+    {
+        return $this->fileExtension;
+    }
 
     /**
      * Set the file extension of template files.
      * 
      * @param string $fileExtension The file extension, starting with a period
      */
-    public function setFileExtension($fileExtension);
-}
-
-
-class NullRenderer implements IgniRenderer
-{
-    public $fileExtension = '.html';
-
-    public function __construct($fileExtension = '.html')
-    {
-        $this->fileExtension = $fileExtension;
-    }
-
-    public function renderText($text)
-    {
-        return $text;
-    }
-    
-    public function renderFile($file)
-    {
-        return file_get_contents($file);
-    }
-
-    public function renderTemplate($template, array $sections)
-    {
-        return '';
-    }
-
-    public function getFileExtension()
-    {
-        return $this->fileExtension;
-    }
-
     public function setFileExtension($fileExtension)
     {
         $this->fileExtension = $fileExtension;

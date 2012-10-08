@@ -2,10 +2,12 @@
 
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
+require_once __DIR__ . DS . 'IgniTemplate.php';
 require_once __DIR__ . DS . 'IgniRenderer.php';
 
 class Igni
 {
+    protected $template;
     protected $renderer;
     protected $theme;
     protected $config;
@@ -21,14 +23,15 @@ class Igni
     protected $themesPath;
     protected $templatesPath;
 
-    protected $_url;
+    protected $postList;
+    protected $pageList;
 
     function __construct(IgniRenderer $renderer = null)
     {
         if ($renderer) {
             $this->renderer = $renderer;
         } else {
-            $this->renderer = new NullRenderer;
+            $this->renderer = new IgniRenderer;
         }
 
         /**
@@ -48,7 +51,11 @@ class Igni
          */
         $this->url = $this->serverName . $this->serverPath;
 
+        # Load the site configuration settings
+
         $this->config = json_decode(file_get_contents($this->path . 'config.json'));
+
+        # Setup the application path
 
         $this->filesPath     = $this->path . 'site' . DS . 'files'     . DS; 
         $this->pagesPath     = $this->path . 'site' . DS . 'pages'     . DS; 
@@ -56,7 +63,14 @@ class Igni
         $this->themesPath    = $this->path . 'site' . DS . 'themes'    . DS; 
         $this->templatesPath = $this->path . 'site' . DS . 'templates' . DS;
 
+        # Assign the configured theme
+
         $this->setTheme($this->config->theme);
+
+        # Setup the post file list and the page file list
+
+        $this->postList = $this->postsList();
+        $this->pageList = $this->pagesList();
     }
 
     /**
@@ -65,15 +79,22 @@ class Igni
      * @param  string $page The page to render
      * @return string The rendered HTML source code
      */
-    public function renderPage($page = '~frontPage')
+    public function renderPage($page)
     {
+        # A renderer is required to proceed
+        
         if (!$this->renderer) {
             throw new Exception('No renderer available');
         }
 
-        $theme = file_get_contents($this->themesPath . $this->theme . '.php');
+        # The URl can be empty
+
+        if (!$page) {
+            $page = '~frontPage';
+        }
 
         # If the page starts with a tilde, it's a special page
+
         if ($page{0} === '~') {
             $special = substr($page, 1);
             if (isset($this->config->$special)) {
@@ -81,28 +102,52 @@ class Igni
             }
         }
 
+        $next = $previous = null;
+
         # Render the main section
 
         if ($this->postExists($page)) {
-            $main = $this->renderer->renderFile($this->postsPath . $page . $this->renderer->getFileExtension());
+            $main = $this->renderer->renderFile($this->getPostFileName($page));
+            $next = $this->getNextPost($page);
+            $previous = $this->getPreviousPost($page);
+            $type = "post";
         } elseif ($this->pageExists($page)) {
-            $main = $this->renderer->renderFile($this->pagesPath . $page . $this->renderer->getFileExtension());
-        } elseif ($page === '~posts') {
-            $this->postsLists();
-        } elseif ($page === '~pages') {
-            $this->pagesList();
+            $main = $this->renderer->renderFile($this->getPageFileName($page));
+            $type = "page";
+        } elseif ($page === '~lastPost') {
+            $lastPost = $this->postsList(1);
+            $lastPost = $lastPost[0];
+            $page = $lastPost['slug'];
+            $main = $this->renderer->renderFile($this->getPostFileName($lastPost['slug']));
+            $next = $this->getNextPost($page);
+            $previous = $this->getPreviousPost($page);
+            $type="post";
         } else {
             $main = $this->renderer->renderFile($this->path . 'igni' . DS . 'errors' .DS . 'article_not_found' . '.md');
+            $type = "page";
         }
 
-        $header = $this->renderer->renderFile($this->templatesPath . 'header' . $this->renderer->getFileExtension());
+        if ($type === 'post') {
+            ob_start();
+                require $this->path . 'igni' . DS . 'widgets' . DS . 'posts_navigation.php';
+                $nav = ob_get_contents();
+            ob_end_clean();
+
+            $main .= $nav;
+        }
+
+        # Render the header, sidebar and footer
+
+        $header  = $this->renderer->renderFile($this->templatesPath . 'header' . $this->renderer->getFileExtension());
         $sidebar = $this->renderer->renderFile($this->templatesPath . 'sidebar' . $this->renderer->getFileExtension());
-        $footer = $this->renderer->renderFile($this->templatesPath . 'footer' . $this->renderer->getFileExtension());
+        $footer  = $this->renderer->renderFile($this->templatesPath . 'footer' . $this->renderer->getFileExtension());
 
         $title = ucwords($page) . ' - ' . $this->config->siteName;
         $url = $this->url;
 
-        return $this->renderer->renderTemplate($theme, compact('url', 'title', 'header', 'main', 'sidebar', 'footer'));
+        $theme = file_get_contents($this->themesPath . $this->theme . '.php');
+
+        return $this->renderer->renderTemplate($theme, compact('url', 'date', 'title', 'header', 'main', 'sidebar', 'footer', 'type'));
     }
 
     /**
@@ -141,7 +186,7 @@ class Igni
     }
 
     /**
-     * The fully-quilified file name of a post.
+     * The fully-qualified file name of a post.
      * 
      * This function does not check whether the file exists or not.
      * 
@@ -151,6 +196,44 @@ class Igni
     public function getPostFileName($slug)
     {
         return $this->postsPath . $slug . $this->renderer->getFileExtension();
+    }
+
+    public function getPreviousPost($slug)
+    {
+        if (!$this->postList) {
+            return null;
+        } else {
+            foreach ($this->postList as $key => $post) {
+                if ($post['slug'] === $slug) {
+                    if (isset($this->postList[$key + 1])) {
+                        return $this->postList[$key + 1];
+                    } else {
+                        return null;
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public function getNextPost($slug)
+    {
+        if (!$this->postList) {
+            return null;
+        } else {
+            foreach ($this->postList as $key => $post) {
+                if ($post['slug'] === $slug) {
+                    if (isset($this->postList[$key - 1])) {
+                        return $this->postList[$key - 1];
+                    } else {
+                        return null;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -188,16 +271,24 @@ class Igni
         return file_exists($this->pagesPath . $slug . $this->renderer->getFileExtension());
     }
 
-    public function postsList($postCount = 0)
+    public function postsList($postCount = 0, $offset = 0)
     {
-        $postFiles = glob($this->postsPath . '*' . $this->renderer->getFileExtension());
+        static $fileList = array();
 
-        usort($postFiles, function($a, $b) {
-            return filemtime($a) > filemtime($b);
-        });
+        if (!$fileList) {
+            $fileList = glob($this->postsPath . '*' . $this->renderer->getFileExtension());
+
+            if ($fileList) {
+                usort($fileList, function($a, $b) {
+                    return filemtime($a) > filemtime($b);
+                });
+            }
+        }
 
         if ($postCount) {
-            $postFiles = array_slice($postFiles, 0, $postCount);
+            $postFiles = array_slice($fileList, $offset, $postCount);
+        } else {
+            $postFiles = $fileList;
         }
 
         array_walk($postFiles, function(&$post)
@@ -226,5 +317,10 @@ class Igni
             });
         
         return $pageFiles;
+    }
+
+    public function getSlugFromFileName($filename)
+    {
+        return pathinfo($filename, PATHINFO_FILENAME);
     }
 }

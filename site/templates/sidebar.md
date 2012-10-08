@@ -1,3 +1,3 @@
-* [Home](home)
-* [HTTP 404](http-404)
+* [Home](~frontPage)
+* [News](~lastPost)
 * [About](about)

@@ -62,10 +62,57 @@ a:hover {
     text-align: justify;
 }
 
+.posts-nav a {
+    display: block;
+    width: 49.6%;
+}
+
+.posts-nav a.previous-post {
+    float: left;
+    text-align: left;
+}
+
+.posts-nav a.next-post {
+    float: right;
+    text-align: right;
+}
+
 #sidebar {
     float: right;
     padding: 20px;
+    position: relative;
     width: 180px;
+}
+
+#sidebar::after {
+    background-color: transparent;
+    border: 14px solid #fff;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    bottom: 0;
+    content: '';
+    height: 0px;
+    position: absolute;
+    right: -1px;
+    width: 0px;
+}
+
+#sidebar ul, #sidebar li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+#sidebar li {
+    padding: 3px 5px;
+}
+
+#sidebar li a {
+    display: block;
+}
+
+#sidebar li:hover {
+    background-color: #fefefe;
 }
 
 #footer {

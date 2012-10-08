@@ -1,8 +1,9 @@
 {
     "frontPage": "home",
     "sidebar": [
-        "*",
-        "posts:5"
+        "~frontPage",
+        "posts:5",
+        "about"
     ],
     "siteName": "Igni",
     "theme": "IgniTheme"
