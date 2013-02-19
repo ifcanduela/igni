@@ -1,5 +1,7 @@
 <?php
 
+namespace igni;
+
 class IgniTemplate
 {
     protected $executed;
@@ -14,7 +16,7 @@ class IgniTemplate
     public function setTemplate($template)
     {
         if (!file_exists($template)) {
-            throw new Exception('The template file does not exist');
+            throw new \Exception('The template file does not exist');
         }
 
         $this->template = file_get_contents($template);

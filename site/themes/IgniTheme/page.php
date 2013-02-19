@@ -4,24 +4,25 @@
     <base href="{{url}}">
     <meta charset="utf-8">
     <title>{{title}}</title>
+    <link rel="stylesheet" href="{{url}}site/themes/IgniTheme/igni.css">
     <link rel="stylesheet" href="{{url}}site/files/styles.css">
     <link rel="shortcut icon" href="favicon.ico">
-    <script src="site/files/scripts.js"></script>
 </head>
 <body>
     <div id="page">
-        <div id="header">{{header}}</div>
-
+        <header id="header">{{header}}</header>
+        <nav id="nav">{{nav}}</nav>
         <div id="middle" class="clearfix">
-            <div id="main">
+            <article id="main">
                 {{main}}
-            </div>
-            <div id="sidebar">
+            </article>
+            <aside id="sidebar">
                 {{sidebar}}
-            </div>
+            </aside>
         </div>
         
-        <div id="footer">{{footer}}</div>
+        <footer id="footer">{{footer}}</footer>
     </div>
+    <script src="site/files/scripts.js"></script>
 </body>
 </html>

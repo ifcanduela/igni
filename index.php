@@ -3,10 +3,12 @@
 # Igni
 # Websites for you and your mom.
 
-require_once 'igni/Igni.php';
-require_once 'igni/MarkdownRenderer.php';
-
+# Get the requested page
 $page = @$_GET['url'];
 
-$igni = new Igni(new MarkdownRenderer);
+# Require the Igni bootstrap script
+require 'igni/bootstrap.php';
+
+# Instance Igni with the Markdown renderer
+$igni = new igni\Igni(new igni\MarkdownRenderer());
 echo $igni->renderPage($page);

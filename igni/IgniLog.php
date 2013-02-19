@@ -1,5 +1,7 @@
 <?php
 
+namespace igni;
+
 class IgniLog
 {
     const FATAL   = 10;
@@ -57,11 +59,11 @@ class IgniLog
         $filename = $log_dir . DIRECTORY_SEPARATOR . 'log_' . date('Y_m_d') . '.txt';
 
         if (file_exists($filename) && !is_writable($filename)) {
-            throw new Exception("Log file is not writable: $filename");
+            throw new \Exception("Log file is not writable: $filename");
         }
 
         if (!$this->_log_file = fopen($filename, 'a')) {
-            throw new Exception("Could not open log file to append: $filename");
+            throw new \Exception("Could not open log file to append: $filename");
         }
     }
 
@@ -88,7 +90,7 @@ class IgniLog
             $entry = $this->_levelNames[$level] . ' ' . str_pad(date('Y-m-d H:m:s'), 20) . $message . PHP_EOL;
 
             if (false === fwrite($this->_log_file, $entry)) {
-                throw new Exception("Could not write to log file.");
+                throw new \Exception("Could not write to log file.");
             }
 
             return true;

@@ -1,5 +1,7 @@
 <?php
 
+namespace igni;
+
 class IgniRenderer
 {
     protected $fileExtension;

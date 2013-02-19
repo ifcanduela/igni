@@ -1,9 +1,6 @@
 <?php
 
-defined('DS') or define('DS', DIRECTORY_SEPARATOR);
-
-require_once __DIR__ . DS . 'IgniTemplate.php';
-require_once __DIR__ . DS . 'IgniRenderer.php';
+namespace igni;
 
 class Igni
 {
@@ -84,7 +81,7 @@ class Igni
         # A renderer is required to proceed
         
         if (!$this->renderer) {
-            throw new Exception('No renderer available');
+            throw new \Exception('No renderer available');
         }
 
         # The URl can be empty
@@ -136,18 +133,33 @@ class Igni
             $main .= $nav;
         }
 
-        # Render the header, sidebar and footer
+        # gather the template blocks for the theme
+        $blocks = array(
+                'title' => ucwords($page) . ' - ' . $this->config->siteName,
+                'url'   => $this->url,
+                'main'  => $main,
+                'type'  => $type,
+            );
 
-        $header  = $this->renderer->renderFile($this->templatesPath . 'header' . $this->renderer->getFileExtension());
-        $sidebar = $this->renderer->renderFile($this->templatesPath . 'sidebar' . $this->renderer->getFileExtension());
-        $footer  = $this->renderer->renderFile($this->templatesPath . 'footer' . $this->renderer->getFileExtension());
+        # Render the templates
+        foreach (glob($this->templatesPath . DS . '*' . $this->renderer->getFileExtension()) as $template) {
+            $blockName = pathinfo($template, PATHINFO_FILENAME);
+            $blocks[$blockName] = $this->renderer->renderFile($template);
+        }
 
-        $title = ucwords($page) . ' - ' . $this->config->siteName;
-        $url = $this->url;
+        $templateFile = 'page';
 
-        $theme = file_get_contents($this->themesPath . $this->theme . '.php');
+        switch ($type) {
+            case 'post':
+                $templateFile = 'post';
+                break; 
+            default:
+                $templatFile = 'page';
+        }
 
-        return $this->renderer->renderTemplate($theme, compact('url', 'date', 'title', 'header', 'main', 'sidebar', 'footer', 'type'));
+        $template = file_get_contents($this->themesPath . $this->getTheme() . DIRECTORY_SEPARATOR. $templateFile . '.php');
+
+        return $this->renderer->renderTemplate($template, $blocks);
     }
 
     /**
@@ -173,16 +185,25 @@ class Igni
     /**
      * Set the theme to use.
      * 
-     * @param string $them A theme file in the themes folder
+     * @param string $theme A theme subfolder in the themes folder
      */
     public function setTheme($theme)
     {
-        if (!file_exists($this->themesPath . $theme . '.php')) {
-            var_dump($this->themesPath . $theme . '.php');
-            throw new Exception("The theme file does not exist: ");
+        if (!is_dir($this->themesPath . $theme)) {
+            throw new \Exception("The theme {$theme} does not exist: ");
         }
 
         $this->theme = $theme;
+    }
+
+    /**
+     * Get the current theme.
+     * 
+     * @return string Current theme folder name
+     */
+    public function getTheme()
+    {
+        return $this->theme;
     }
 
     /**
