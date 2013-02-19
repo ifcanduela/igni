@@ -4,4 +4,4 @@ So, you don't know how to make websites, but you want one. An affordable, pretty
 
 What I can tell you is that you should try it.
 
-Check out [the answers to the questions](faq) your having!
+Check out [the answers to the questions](faq) you're having!
