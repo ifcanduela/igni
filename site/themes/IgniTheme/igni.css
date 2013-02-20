@@ -64,6 +64,8 @@ a:hover {
 #nav ol li:after {
     content: '';
     border: 0 solid transparent;
+    /* strange hack to avoid a grey border in firefox (http://stackoverflow.com/questions/13630886)*/
+    border-color: rgba(255, 255, 255, 0);
     border-top: 10px solid #fff;
     border-left-width: 10px;
     position: absolute;
@@ -116,9 +118,14 @@ a:hover {
 
 #sidebar::after {
     background-color: transparent;
-    border: 14px solid #fff;
-    border-top-color: transparent;
-    border-left-color: transparent;
+
+
+    border: 0 solid transparent;
+    /* strange hack to avoid a grey border in firefox (http://stackoverflow.com/questions/13630886)*/
+    border-color: rgba(255, 255, 255, 0);
+    border-bottom: 24px solid #fff;
+    border-left-width: 24px;
+
     bottom: 0;
     content: '';
     height: 0px;

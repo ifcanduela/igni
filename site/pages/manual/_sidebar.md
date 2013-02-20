@@ -1,0 +1,6 @@
+- [How to install](manual/how-to-install)
+- [Pages](manual/pages)
+- [Posts](manual/posts)
+- [Navigation](manual/navigation)
+- [Blocks](manual/blocks)
+- [Themes](manual/themes)

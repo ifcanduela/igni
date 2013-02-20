@@ -1,0 +1,47 @@
+/**
+ * Absurd Theme stylesheet
+ *
+ * @author ifcanduela <ifcanduela@gmail.com>
+ */
+
+body, h1, h2, h3, h4, h5, h6, p, blockquote, ul, ol, li, table, tr, th, td, dl, dt, dd {
+    background-color: #f8f8f8;
+    color: #111;
+    font: normal 12px/110% consolas, courier;
+}
+
+a {
+    color: #03e;
+}
+
+em {
+	background-color: #ff8;
+	font-style: normal;
+}
+
+#wrapper {
+    margin: 0 auto;
+    width: 500px;
+}
+
+#main img {
+    width: 100%;
+}
+
+#footer {
+	border-top: 2px dashed #111;
+	text-align: center;
+}
+
+#main code:before, #main code:after {
+    content: '"';
+}
+
+#main pre:before, #main pre:after {
+    content: '---';
+    display: block;
+}
+
+#main pre code:before, #main pre code:after {
+    content: '';
+}

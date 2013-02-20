@@ -4,9 +4,13 @@ namespace igni;
 
 class Igni
 {
+    /** @var IgniTemplate */
     protected $template;
+    /** @var IgniRenderer */
     protected $renderer;
+    /** @var IgniTheme */
     protected $theme;
+
     protected $config;
 
     protected $path;
@@ -18,7 +22,7 @@ class Igni
     protected $pagesPath;
     protected $postsPath;
     protected $themesPath;
-    protected $templatesPath;
+    protected $blocksPath;
 
     protected $postList;
     protected $pageList;
@@ -54,15 +58,15 @@ class Igni
 
         # Setup the application path
 
-        $this->filesPath     = $this->path . 'site' . DS . 'files'     . DS; 
-        $this->pagesPath     = $this->path . 'site' . DS . 'pages'     . DS; 
-        $this->postsPath     = $this->path . 'site' . DS . 'posts'     . DS; 
-        $this->themesPath    = $this->path . 'site' . DS . 'themes'    . DS; 
-        $this->templatesPath = $this->path . 'site' . DS . 'templates' . DS;
+        $this->filesPath  = $this->path . 'site' . DS . 'files'     . DS; 
+        $this->pagesPath  = $this->path . 'site' . DS . 'pages'     . DS; 
+        $this->postsPath  = $this->path . 'site' . DS . 'posts'     . DS; 
+        $this->themesPath = $this->path . 'site' . DS . 'themes'    . DS; 
+        $this->blocksPath = $this->path . 'site' . DS . 'blocks' . DS;
 
         # Assign the configured theme
 
-        $this->setTheme($this->config->theme);
+        $this->theme = new IgniTheme($this->themesPath . $this->config->theme);
 
         # Setup the post file list and the page file list
 
@@ -114,8 +118,8 @@ class Igni
         } elseif ($page === '~lastPost') {
             $lastPost = $this->postsList(1);
             $lastPost = $lastPost[0];
-            $page = $lastPost['slug'];
-            $main = $this->renderer->renderFile($this->getPostFileName($lastPost['slug']));
+            $page = $lastPost->slug;
+            $main = $this->renderer->renderFile($this->getPostFileName($lastPost->slug));
             $next = $this->getNextPost($page);
             $previous = $this->getPreviousPost($page);
             $type="post";
@@ -126,9 +130,8 @@ class Igni
 
         if ($type === 'post') {
             ob_start();
-                require $this->path . 'igni' . DS . 'widgets' . DS . 'posts_navigation.php';
-                $nav = ob_get_contents();
-            ob_end_clean();
+                require $this->path . 'igni' . DS . 'block' . DS . 'posts_navigation.php';
+            $nav = ob_get_clean();
 
             $main .= $nav;
         }
@@ -141,23 +144,23 @@ class Igni
                 'type'  => $type,
             );
 
-        # Render the templates
-        foreach (glob($this->templatesPath . DS . '*' . $this->renderer->getFileExtension()) as $template) {
+        # Render the template blocks
+        foreach (glob($this->blocksPath . '*' . $this->renderer->getFileExtension()) as $template) {
             $blockName = pathinfo($template, PATHINFO_FILENAME);
             $blocks[$blockName] = $this->renderer->renderFile($template);
         }
 
-        $templateFile = 'page';
-
         switch ($type) {
             case 'post':
-                $templateFile = 'post';
+                $templateFile = $this->theme->getPostTemplate();
                 break; 
             default:
-                $templatFile = 'page';
+                $templateFile = $this->theme->getPageTemplate();
         }
 
-        $template = file_get_contents($this->themesPath . $this->getTheme() . DIRECTORY_SEPARATOR. $templateFile . '.php');
+        ob_start();
+            include $templateFile;
+        $template = ob_get_clean();
 
         return $this->renderer->renderTemplate($template, $blocks);
     }
@@ -180,20 +183,6 @@ class Igni
     public function getRenderer()
     {
         return $this->renderer;
-    }
-
-    /**
-     * Set the theme to use.
-     * 
-     * @param string $theme A theme subfolder in the themes folder
-     */
-    public function setTheme($theme)
-    {
-        if (!is_dir($this->themesPath . $theme)) {
-            throw new \Exception("The theme {$theme} does not exist: ");
-        }
-
-        $this->theme = $theme;
     }
 
     /**
@@ -225,7 +214,7 @@ class Igni
             return null;
         } else {
             foreach ($this->postList as $key => $post) {
-                if ($post['slug'] === $slug) {
+                if ($post->slug === $slug) {
                     if (isset($this->postList[$key + 1])) {
                         return $this->postList[$key + 1];
                     } else {
@@ -244,7 +233,7 @@ class Igni
             return null;
         } else {
             foreach ($this->postList as $key => $post) {
-                if ($post['slug'] === $slug) {
+                if ($post->slug === $slug) {
                     if (isset($this->postList[$key - 1])) {
                         return $this->postList[$key - 1];
                     } else {
@@ -314,7 +303,7 @@ class Igni
 
         array_walk($postFiles, function(&$post)
             {
-                $post = array(
+                $post = (object) array(
                     'filename' =>$post,
                     'slug' => pathinfo($post, PATHINFO_FILENAME), 
                     'title' => ucwords(str_replace(array('-', '_'), array(' ', '-'), pathinfo($post, PATHINFO_FILENAME))),
@@ -330,7 +319,7 @@ class Igni
         
         array_walk($pageFiles, function(&$page)
             {
-                $page = array(
+                $page = (object) array(
                     'filename' => $page,
                     'slug' => pathinfo($page, PATHINFO_FILENAME), 
                     'title' => ucwords(str_replace(array('-', '_'), array(' ', '-'), pathinfo($page, PATHINFO_FILENAME))),

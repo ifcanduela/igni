@@ -6,7 +6,7 @@ Igni is a PHP script that takes your files and automatically builds a simple web
 
 ## Who Is It For?
 
-This is for those folks who want a simple website and have a web host with PHP support, but don't know PHP and don't want to know PHP.
+This is for those folks who want a simple website and have a web host with [PHP](http://php.net/) support, but don't know PHP and don't want to know PHP.
 
 ## How Do I Use It?
 
@@ -18,7 +18,9 @@ Only slightly. There's a file, `config.json`, that you can edit to change a few 
 
 ## Can I Change The Way It Looks?
 
-You can change quite a bit of it, yes. The overall structure of the site is called a *theme*, and you can change it if you know some basic HTML (or PHP). This file also determines which stylesheet you use. The content of main *pieces* of the web page (the header, the menu, the sidebar and the footer) can be changed in the same way you write your pages and posts.
+You can change quite a bit of it, yes. The overall structure of the site is called a *theme*, and you can change it if you know some basic HTML (or PHP). This file also determines which stylesheet you use. 
+
+The content of main *pieces* of the web page, called **blocks** (header, menu, sidebar and footer) can be changed in the same way you write your pages and posts.
 
 ## How Do I Write Links To Other Articles?
 
