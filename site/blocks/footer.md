@@ -1,1 +1,0 @@
-Created with [Igni](http://ifcanduela.com/igni)

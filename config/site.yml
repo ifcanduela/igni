@@ -1,0 +1,7 @@
+title: IGNI
+subtitle: Automatic websites for you and your kids.
+splash: bg.jpg
+cache-duration: 3600
+articles-in-homepage: 3
+articles-perpage: 9
+debug: false

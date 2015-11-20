@@ -1,5 +1,0 @@
-* [Home](~frontPage)
-* [Setup](manual/how-to-install)
-* [F.A.Q.](faq)
-* [News](~lastPost)
-* [About](about)
