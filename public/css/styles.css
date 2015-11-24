@@ -85,23 +85,76 @@ body {
     width: 240px;
   }
 }
-.page-banner .author-picture,
-.page-splash .author-picture {
+.page-banner {
+  height: 50vh;
+}
+.splash-meta,
+.post-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.splash-meta .author-name,
+.post-meta .author-name {
+  order: 1;
+}
+.splash-meta .author-picture,
+.post-meta .author-picture {
   width: 120px;
   height: 120px;
   border-radius: 50%;
+  order: 2;
+  margin: 0 25px;
 }
-.page-banner {
-  height: 50vh;
+.splash-meta .post-date,
+.post-meta .post-date {
+  order: 3;
+}
+.post-meta {
+  width: 960px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+}
+@media screen and (max-width: 1080px) {
+  .post-meta {
+    width: 640px;
+  }
+}
+@media screen and (max-width: 720px) {
+  .post-meta {
+    width: 360px;
+  }
+}
+@media screen and (max-width: 480px) {
+  .post-meta {
+    width: 240px;
+  }
+}
+@media screen and (max-width: 720px) {
+  .post-meta {
+    flex-direction: column;
+    width: 360px;
+  }
+}
+@media screen and (max-width: 480px) {
+  .post-meta {
+    width: 240px;
+  }
+}
+.post-meta .author-name {
+  order: 2;
+}
+.post-meta .author-picture {
+  margin: 0;
+  order: 1;
+}
+.post-meta .post-date {
+  order: 3;
 }
 .page-footer {
   background-color: #333344;
   color: #ffffff;
-}
-.page-blog {
-  background-color: #ffffff;
-  color: #333333;
-  padding: 50px;
 }
 .article-list {
   width: 960px;
@@ -146,6 +199,7 @@ body {
   }
 }
 .article-list article a {
+  color: #fff;
   display: flex;
   padding: 50px;
   text-decoration: none;
@@ -189,20 +243,23 @@ body {
   text-align: center;
   line-height: 1;
 }
-.post-title h1 {
+.article-list article a .post-date {
+  font-size: 80%;
+}
+.page-blog {
+  background-color: #ffffff;
+  color: #333333;
+  padding: 50px;
+}
+.page-blog .post-title h1 {
   font-family: Montserrat;
   text-transform: uppercase;
   text-align: center;
   font-size: 48px;
 }
-.post-subtitle {
+.page-blog .post-subtitle {
   font-size: 22px;
   text-align: center;
-}
-.post-date {
-  text-align: center;
-  color: #fff;
-  font-size: 80%;
 }
 .post-body {
   width: 960px;

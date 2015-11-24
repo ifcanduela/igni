@@ -5,7 +5,9 @@
         <?php endif; ?>
 
         <?php if ($article->showDate): ?>
-            <?= $article->date ?>
+            <div class="post-date">
+                <?= $article->date ?>
+            </div>
         <?php endif; ?>
     </div>
 <?php endif; ?>

@@ -132,15 +132,6 @@ body {
         font-weight: bold;
     }
 
-    .author {
-    }
-
-    .author-picture {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-    }
-
     .arrow-down {
 
     }
@@ -150,15 +141,61 @@ body {
     height: 50vh;
 }
 
+.splash-meta,
+.post-meta {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .author-name {
+        order: 1;
+    }
+
+    .author-picture {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        order: 2;
+        margin: 0 25px;
+    }
+
+    .post-date {
+        order: 3;
+    }
+}
+
+.post-meta {
+    .container;
+
+    @media screen and (max-width: @breakpoint_tablet) {
+        flex-direction: column;
+        width: @breakpoint_tablet_width;
+    }
+
+    @media screen and (max-width: @breakpoint_phone) {
+        width: @breakpoint_phone_width;
+    }
+
+    align-items: center;
+    justify-content: space-between;
+
+    .author-name {
+        order: 2;
+    }
+
+    .author-picture {
+        margin: 0;
+        order: 1;
+    }
+
+    .post-date {
+        order: 3;
+    }
+}
+
 .page-footer {
     background-color: @alt_background_color;
     color: @alt_foreground_color;
-}
-
-.page-blog {
-    background-color: @background_color;
-    color: @foreground_color;
-    padding: @spacey_padding;
 }
 
 .article-list {
@@ -190,6 +227,7 @@ body {
         @thumbnail_ratio: (16 / 9);
 
         a {
+            color: #fff;
             display: flex;
             padding: @spacey_padding;
             text-decoration: none;
@@ -231,29 +269,34 @@ body {
                 text-align: center;
                 line-height: 1;
             }
+
+            .post-date {
+                font-size: 80%;
+            }
         }
     }
 
 }
 
-.post-title {
-    h1 {
-        font-family: Montserrat;
-        text-transform: uppercase;
-        text-align: center;
-        font-size: 48px;
+
+.page-blog {
+    background-color: @background_color;
+    color: @foreground_color;
+    padding: @spacey_padding;
+
+    .post-title {
+        h1 {
+            font-family: Montserrat;
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 48px;
+        }
     }
-}
 
-.post-subtitle {
-    font-size: 22px;
-    text-align: center;
-}
-
-.post-date {
-    text-align: center;
-    color: #fff;
-    font-size: 80%;
+    .post-subtitle {
+        font-size: 22px;
+        text-align: center;
+    }
 }
 
 .post-body {
